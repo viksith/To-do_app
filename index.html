@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  margin: 0;
+  background-size: cover;
+  height: 100%;
+  background-image: url('https://cdn.shopify.com/s/files/1/0011/6005/2795/articles/169_4c9160bf-e531-4ab1-a6a0-761b0008c06e.jpg?v=1629206511');
+}
+
+
+/* Include the padding and border in an element's total width and height */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Remove margins and padding from the list */
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.controls{
+  padding: 18px 25px;
+  border-bottom: 1px solid #ccc;
+}
+
+.filters span{
+  margin: 0 8px;
+  font-size: 17px;
+  color: #444444;
+  cursor: pointer;
+}
+
+/* Style the list items */
+ul li {
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: rgb(238, 216, 195);
+  font-size: 18px;
+  transition: 0.2s;
+  border-radius: 20px;
+  opacity: 83%;
+  background: linear-gradient(to right, rgb(238, 216, 195) 0%, #f38339 150%);
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+ul li:nth-child(odd) {
+  background: rgb(238, 216, 195);
+  background: linear-gradient(to right, rgb(238, 216, 195) 0%, #f38339 150%);
+  opacity: 83%;
+}
+
+/* Darker background-color on hover */
+ul li:hover {
+  background: rgba(255, 111, 27, 0.836);
+}
+
+/* When clicked on, add a background color and strike out text */
+ul li.checked {
+  background: #e49c30;
+  color: rgb(14, 0, 9);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+/* Add a "checked" mark when clicked on */
+ul li.checked::before {
+  content: '';
+  position: absolute;
+  border-color: #fff;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  top: 10px;
+  left: 16px;
+  transform: rotate(45deg);
+  height: 15px;
+  width: 7px;
+}
+
+/* Style the close button<!--background-color: #100e7e; */
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 12px 16px 12px 16px;
+}
+
+.close:hover {
+  background-color: #ce3925;
+  color: white;
+}
+
+/* Style the header */
+.header {
+  background-image: url('https://cdn.shopify.com/s/files/1/0011/6005/2795/articles/169_4c9160bf-e531-4ab1-a6a0-761b0008c06e.jpg?v=1629206511');
+  padding: 30px 40px;
+  color: rgb(255, 255, 255);
+  opacity: 0.9;
+  text-align: center;
+  background-size: cover;
+  height: 100%;
+}
+
+/* Clear floats after the header */
+.header:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the input */
+input {
+  margin: 0;
+  border: true;
+  border-radius: 0px;
+  width: 100%;
+  padding: 10px;
+  float: left;
+  font-size: 16px;
+}
+
+/* Style the "Add" button */
+.addBtn {
+  padding: 20px;
+  width:25%;
+  background: #eb772a;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 100;
+}
+
+.addBtn:hover {
+  background-color: rgb(196, 64, 12);
+}
+
+.span{
+  margin: 0 8px;
+  font-size: 17px;
+  color: #444444;
+  cursor: pointer;
+}
+
+.header.Size_Span {
+        float: left;
+      }
+
+</style> 
+</head>
+
+<body>
+
+  <dialog id="favDialog">
+    <form method="dialog">
+      <output id="des" aria-live="polite"></output><br>
+      <output id="dead" aria-live="polite"></output>
+      <button value="cancel">Cancel</button>
+      </form>
+  </dialog>
+<div id="myDIV" class="header">
+  <h2 style="margin:5px;font-family:Garamond;font-size:45px">My To Do List 📝</h2>
+  <input type="text" id="myInput" placeholder="Title...">
+  <input type="date" id="myCal" placeholder="Deadline...">
+  <input type="text" id="myDesc" placeholder="Description...">
+   <br> <br> <br>
+   <span onclick="newElement()" class="addBtn">Add</span>
+   <span onclick="showAll()" class="addBtn">All</span>
+  <span onclick="showCompleted()" class="addBtn">Completed</span>
+  <span id="spanid" class="Size_Span">
+  </span>
+</div>
+<ul id="myUL">
+</ul>
+
+<script>
+
+//variables
+var desc;
+var cal;
+var inputValue;
+var count=0;
+var todoList=[];
+
+// Create a "close" button and append it to each list item
+var myNodelist = document.getElementsByTagName("LI");
+var i;
+for (i = 0; i < myNodelist.length; i++) {
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  myNodelist[i].appendChild(span);
+}
+
+// Click on a close button to delete list item
+var close = document.getElementsByClassName("close");
+var i;
+for (i = 0; i < close.length; i++) {
+  close[i].onclick = function() {
+    alert("Closing...");
+
+    var div = this.parentElement;
+    div.style.display = "none"; }
+}
+
+// Add a "checked" symbol when clicking on a list item
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  if (ev.target.tagName === 'LI') {
+
+   if(ev.target.classList.toggle('checked')){
+   var tmptext = ev.target.innerHTML;
+   var tmptitle = tmptext.split(" "); 
+
+   for(let todo of todoList)
+   {
+      if(todo.title===tmptitle[2])
+        todo.complete=true;
+   }
+  }
+  else{
+    ev.target.classList.toggle('checked');
+    todo.complete=true;
+
+  }    
+}
+}, false);
+
+
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  inputValue = document.getElementById("myInput").value;
+  desc = document.getElementById("myDesc").value;
+  cal = document.getElementById("myCal").value; 
+  var t = document.createTextNode("Title - " +inputValue +" | Description - "+desc +" | Deadline - "+cal);
+  var pending = false;
+  var complete = false;
+  var todo = new Todo(inputValue,cal,desc,pending,complete);
+  li.appendChild(t);
+  if (desc==='' || cal==='' || inputValue==='') {
+    alert("You must fill everything!");
+  } 
+  else {
+    document.getElementById("myUL").appendChild(li);
+    todoList.push(todo);
+  }
+  document.getElementById("myInput").value = "";
+  document.getElementById("myDesc").value = "";
+  document.getElementById("myCal").value = "";
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none";
+     }
+  }
+ 
+}
+
+class Todo {
+    constructor(title,deadline,description,pending,complete) {
+      this.title = title;
+      this.deadline = deadline;
+      this.description = description;
+      this.pending=pending;
+      this.complete=complete; }
+  }
+  function showAll() {
+    document.getElementById("myUL").innerHTML=null;
+
+    for(let todo of todoList){
+     console.log("Title - "+todo.title +" | Desc - "+todo.description +" | DeadLine - "+todo.deadline +" | Pending - "+todo.pending +
+     " | Completed - "+todo.complete);
+     console.log("List..."+list.innerText);
+     var li = document.createElement("li");
+     var t = document.createTextNode("Title - " +todo.title +" | Description - "+todo.description +" | Deadline - "+todo.deadline);
+     li.appendChild(t);
+     document.getElementById("myUL").appendChild(li);
+
+      if(todo.complete)
+      {
+        li.classList.toggle('checked');
+      }
+    
+  }
+   //  li.classList.toggle('checked');
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none"; }
+  }
+}
+
+  function showCompleted(){
+    document.getElementById("myUL").innerHTML=null;
+    for(let todo of todoList){
+     console.log("Title - "+todo.title +" | Desc - "+todo.description +" | DeadLine - "+todo.deadline +" | Pending - "+todo.pending +
+     " | Completed - "+todo.complete);
+     if(todo.complete){
+     var li = document.createElement("li");
+     var text = "Title - " +todo.title +" | Description - "+todo.description +" | Deadline - "+todo.deadline;
+     var t = document.createTextNode(text);
+     li.appendChild(t);
+     document.getElementById("myUL").appendChild(li);
+     //    ev.target.classList.toggle('checked');   
+     if(todo.complete)
+     {
+      li.classList.toggle('checked');
+    }
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close"; 
+  span.appendChild(txt);
+  li.appendChild(span);
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none"; }
+  }
+}
+    }
+  }
+
+</script>
+
+</body>
+</html>
